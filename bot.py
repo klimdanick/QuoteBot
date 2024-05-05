@@ -3,7 +3,6 @@
 from configparser import ConfigParser
 import os
 import discord
-from discord import app_commands
 
 import json  
 import datetime as dt
