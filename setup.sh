@@ -42,3 +42,5 @@ if [ ! -f "$quotes_file" ]; then
 else
     echo "✅ $quotes_file exists."
 fi
+
+./run.sh
