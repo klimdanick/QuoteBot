@@ -1,20 +1,24 @@
 # This is new in the discord.py 2.0 update
+#imports
 from configparser import ConfigParser
-config = ConfigParser()
-config.read('config.cfg')
-token = config['bot']['token']
-guildId = config['bot']['guildId']
-
-
-# imports
+import os
 import discord
 from discord import app_commands
 
-import requests
 import json  
 import datetime as dt
 import random
 import math
+
+
+#configuring bot
+config = ConfigParser()
+if not os.path.exists("config.cfg"):
+    raise FileNotFoundError("Run ./setup.sh first")
+config.read('config.cfg')
+token = config['bot']['token']
+guildId = config['bot']['guildId']
+
 
 last_accessed_date = None
 current_string = None
@@ -33,7 +37,9 @@ def daily_quote():
         data = json.load(f)
         print(date);
         print(data);
-        if (data["metaData"]["time"] == date):
+        if len(data["quotes"]) == 0:
+            return quote
+        elif (data["metaData"]["time"] == date):
             quote = data["metaData"]["currentQuote"]["quote"] + "   - " + data["metaData"]["currentQuote"]["auteur"]
         else:
             data["metaData"]["time"] = date
@@ -178,5 +184,12 @@ async def on_ready():
     await tree.sync(guild=discord.Object(id=guildId))
     print("Ready!")
 
-# run the bot
-client.run(token)
+def main():
+    if not os.path.exists("quotes.json"):
+        raise FileNotFoundError("Run setup.sh first")
+    # run the bot
+    client.run(token)
+
+
+if __name__ == "__main__":
+    main()
