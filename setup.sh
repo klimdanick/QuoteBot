@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Installing dependencies
-pip install -r requirements.txt
+pip install -r dependencies.txt
 echo "✅ Dependencies installed"
 
 config_file="config.cfg"
