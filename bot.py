@@ -9,6 +9,8 @@ import datetime as dt
 import random
 import math
 
+from stats import getStats, dictToTable
+
 
 #configuring bot
 config = ConfigParser()
@@ -78,7 +80,20 @@ async def addQuote(interaction, quote: str, auteur: str):
         json.dump(data, f)
     
     await interaction.response.send_message(f"added quote from {auteur}!")
-    
+
+@tree.command(
+    name="statsImage",
+    description="See quote stats",
+    guild=discord.Object(id=guildId)
+) 
+async def statsImage(interaction):
+    leaderboard, totalAutors, totalQuotes = getStats()
+    file = dictToTable(leaderboard, ["place", "author", "amount"]) 
+    await interaction.response.send_message(file=discord.File((file)))
+    file = dictToTable({totalAutors: totalQuotes,}, ["totalAuthors","totalQuotes"], False)
+    await interaction.channel.send(file=discord.File((file)))
+
+
 @tree.command(
     name="stats",
     description="See quote stats",
