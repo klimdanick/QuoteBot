@@ -2,7 +2,7 @@
 
 # Installing dependencies
 pip install -r requirements.txt
-echo "✅ Requirements installed"
+echo "✅ Dependencies installed"
 
 config_file="config.cfg"
 quotes_file="quotes.json"
