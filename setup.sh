@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Installing dependencies
-pip install -r requirements.txt
+pip install -r dependencies.txt
 echo "✅ Dependencies installed"
 
 config_file="config.cfg"
@@ -42,3 +42,5 @@ if [ ! -f "$quotes_file" ]; then
 else
     echo "✅ $quotes_file exists."
 fi
+
+./run.sh
