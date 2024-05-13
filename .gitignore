@@ -136,3 +136,4 @@ dist
 .pnp.*
 .DS_Store
 table.png
+__pycache__/
