@@ -11,12 +11,13 @@ def getStats():
 
         for quote in data["quotes"]:
             for auteur in (
-                quote["auteur"].split(" & ")
+                quote["auteur"].split("&")
                 if "&" in quote["auteur"]
                 else quote["auteur"].split(" en ")
                 if " en " in quote["auteur"]
                 else [quote["auteur"]]
             ):
+        
                 leaderBoard[auteur.lower()] = leaderBoard.get(auteur.lower(), 0) + 1
         totalQuotes = len(data["quotes"])
         totalAuthors = len(leaderBoard.keys())
