@@ -7,6 +7,7 @@ import discord
 import json  
 import datetime as dt
 import random
+from zoneinfo import ZoneInfo
 
 from stats import getStats, dictToTable
 
@@ -33,7 +34,7 @@ def daily_quote():
     quote = "no quote available - QuoteBot"
 
     with open('quotes.json', 'r') as f:
-        date = dt.datetime.now().strftime("%d/%m/%Y")
+        date = dt.datetime.now(ZoneInfo("Europe/Amsterdam")).strftime("%d/%m/%Y")
         data = json.load(f)
         print(date)
         print(data)
