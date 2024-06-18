@@ -7,7 +7,6 @@ import discord
 import json  
 import datetime as dt
 import random
-import math
 
 from stats import getStats, dictToTable
 
