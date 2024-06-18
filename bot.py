@@ -38,12 +38,12 @@ def daily_quote():
         if len(data["quotes"]) == 0:
             quote = "no quote available - QuoteBot"
         elif (data["metaData"]["time"] == date):
-            quote = f'{data["metaData"]["currentQuote"]["quote"]} - { data["metaData"]["currentQuote"]["auteur"]}'
+            quote = f'{data["metaData"]["currentQuote"]["quote"]} - { data["metaData"]["currentQuote"]["author"]}'
         else:
             data["metaData"]["time"] = date
             newQuote = random.choice(data["quotes"])
             data["metaData"]["currentQuote"] = newQuote
-            quote  = f'{newQuote["quote"]} - {newQuote["auteur"]}'
+            quote  = f'{newQuote["quote"]} - {newQuote["author"]}'
             
     with open('quotes.json', 'w') as f:
         json.dump(data, f)
@@ -67,17 +67,17 @@ async def quote(interaction):
     description="Add a new quote",
     guild=discord.Object(id=GUILD_ID)
 )
-async def addQuote(interaction, quote: str, auteur: str):
+async def addQuote(interaction, quote: str, author: str):
     quote_obj = {}
     quote_obj["quote"] = quote
-    quote_obj["auteur"] = auteur
+    quote_obj["author"] = author
     with open('quotes.json', 'r') as f:
         data = json.load(f)
     with open('quotes.json', 'w') as f:
         data["quotes"].append(quote_obj)
         json.dump(data, f)
     
-    await interaction.response.send_message(f"added quote from {auteur}!")
+    await interaction.response.send_message(f"added quote from {author}!")
 
 @tree.command(
     name="stats",
