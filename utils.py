@@ -1,29 +1,5 @@
-
-import json
 import svgwrite
 from cairosvg import svg2png
-
-
-def getStats():
-    with open('quotes.json', 'r') as f:
-        data = json.load(f)
-        leaderBoard = {}
-
-        for quote in data["quotes"]:
-            for auteur in (
-                quote["auteur"].split("&")
-                if "&" in quote["auteur"]
-                else quote["auteur"].split(" en ")
-                if " en " in quote["auteur"]
-                else [quote["auteur"]]
-            ):
-                leaderBoard[auteur.lower()] = leaderBoard.get(auteur.lower(), 0) + 1
-        totalQuotes = len(data["quotes"])
-        totalAuthors = len(leaderBoard.keys())
-
-    #  Sort on values
-    return dict(sorted(leaderBoard.items(), key=lambda item: item[1], reverse=True)), totalAuthors, totalQuotes
-
 
 
 def dictToTable(leaderboard, column_names, include_index=True):
