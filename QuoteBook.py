@@ -4,9 +4,10 @@ import random
 from zoneinfo import ZoneInfo
 
 class Quote:
-    def __init__(self, quote, author):
+    def __init__(self, quote, author, date = None):
         self.quote = quote
         self.author = author
+        self.date_added = date
 
 class MetaData:
     def __init__(self, time, currentQuote):
@@ -46,7 +47,7 @@ class QuoteBook:
                 
             with open(self.file_path, 'w') as f:
                 json.dump({
-                    "quotes": [{"quote": quote.quote, "author": quote.author} for quote in self.quotes],
+                    "quotes": [{"quote": quote.quote, "author": quote.author, "date": quote.date_added if quote.date_added is not None else None} for quote in self.quotes],
                     "metaData": {
                         "time": self.metaData.time,
                         "currentQuote": current_quote_dict
@@ -70,6 +71,7 @@ class QuoteBook:
         return f'{new_quote.quote} - {new_quote.author}'
     
     def add_quote(self, quote: Quote):
+        quote.date_added =  dt.datetime.now(tz=self.tz).strftime("%d/%m/%Y")
         self.quotes.append(quote)
         self.save_data()
     

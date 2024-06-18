@@ -1,5 +1,3 @@
-# This is new in the discord.py 2.0 update
-#imports
 from configparser import ConfigParser
 import os
 from pathlib import Path
@@ -33,7 +31,6 @@ tree = discord.app_commands.CommandTree(client)
     description="The daily quote!",
     guild=discord.Object(id=GUILD_ID)
 )
-
 async def quote(interaction):
     await interaction.response.send_message(quotebook.quote_of_the_day())
     
@@ -42,7 +39,6 @@ async def quote(interaction):
     description="Add a new quote",
     guild=discord.Object(id=GUILD_ID)
 )
-
 async def addQuote(interaction, quote: str, author: str):
     quotebook.add_quote(Quote(quote, author))
     await interaction.response.send_message(f"added quote from {author}!")
@@ -52,7 +48,6 @@ async def addQuote(interaction, quote: str, author: str):
     description="See quote stats",
     guild=discord.Object(id=GUILD_ID)
 ) 
-
 async def stats(interaction):
     leaderboard, totalAutors, totalQuotes = quotebook.get_stats()
     file = dictToTable(leaderboard, ["place", "author", "amount"]) 
@@ -64,7 +59,6 @@ async def stats(interaction):
 async def on_ready():
     await tree.sync(guild=discord.Object(id=GUILD_ID))
     print("Ready!")
-
 def main():
     if not os.path.exists("quotes.json"):
         raise FileNotFoundError("Run setup.sh first")
