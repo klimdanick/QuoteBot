@@ -17,9 +17,9 @@ config = ConfigParser()
 if not os.path.exists("config.cfg"):
     raise FileNotFoundError("Run ./setup.sh first")
 config.read('config.cfg')
-token = config['bot']['token']
-guildId = config['bot']['guildId']
-
+TOKEN = config['bot']['token']
+GUILD_ID = config['bot']['guildId']
+TZ = ZoneInfo(config["bot"]["TimeZone"]) if config.has_option("bot", "TimeZone") else ZoneInfo("Europe/Amsterdam") 
 
 last_accessed_date = None
 current_string = None
@@ -31,21 +31,19 @@ client = discord.Client(intents=intents)
 tree = discord.app_commands.CommandTree(client)
 
 def daily_quote():
-    quote = "no quote available - QuoteBot"
-
     with open('quotes.json', 'r') as f:
-        date = dt.datetime.now(ZoneInfo("Europe/Amsterdam")).strftime("%d/%m/%Y")
+        date = dt.datetime.now(tz=TZ).strftime("%d/%m/%Y")
         data = json.load(f)
-        print(date)
-        print(data)
+
         if len(data["quotes"]) == 0:
-            return quote
+            quote = "no quote available - QuoteBot"
         elif (data["metaData"]["time"] == date):
-            quote = data["metaData"]["currentQuote"]["quote"] + "   - " + data["metaData"]["currentQuote"]["auteur"]
+            quote = f'{data["metaData"]["currentQuote"]["quote"]} - { data["metaData"]["currentQuote"]["auteur"]}'
         else:
             data["metaData"]["time"] = date
-            data["metaData"]["currentQuote"] = data["quotes"][random.randrange(0, len(data["quotes"]), 1)]
-            quote = data["metaData"]["currentQuote"]["quote"] + "   - " + data["metaData"]["currentQuote"]["auteur"]
+            newQuote = random.choice(data["quotes"])
+            data["metaData"]["currentQuote"] = newQuote
+            quote  = f'{newQuote["quote"]} - {newQuote["auteur"]}'
             
     with open('quotes.json', 'w') as f:
         json.dump(data, f)
@@ -59,7 +57,7 @@ def daily_quote():
 @tree.command(
     name="quote",
     description="The daily quote!",
-    guild=discord.Object(id=guildId)
+    guild=discord.Object(id=GUILD_ID)
 )
 async def quote(interaction):
     await interaction.response.send_message(daily_quote())
@@ -67,7 +65,7 @@ async def quote(interaction):
 @tree.command(
     name="add_quote",
     description="Add a new quote",
-    guild=discord.Object(id=guildId)
+    guild=discord.Object(id=GUILD_ID)
 )
 async def addQuote(interaction, quote: str, auteur: str):
     quote_obj = {}
@@ -84,7 +82,7 @@ async def addQuote(interaction, quote: str, auteur: str):
 @tree.command(
     name="stats",
     description="See quote stats",
-    guild=discord.Object(id=guildId)
+    guild=discord.Object(id=GUILD_ID)
 ) 
 async def stats(interaction):
     leaderboard, totalAutors, totalQuotes = getStats()
@@ -95,14 +93,14 @@ async def stats(interaction):
     
 @client.event
 async def on_ready():
-    await tree.sync(guild=discord.Object(id=guildId))
+    await tree.sync(guild=discord.Object(id=GUILD_ID))
     print("Ready!")
 
 def main():
     if not os.path.exists("quotes.json"):
         raise FileNotFoundError("Run setup.sh first")
     # run the bot
-    client.run(token)
+    client.run(TOKEN)
 
 
 if __name__ == "__main__":

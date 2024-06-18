@@ -1,0 +1,19 @@
+{
+  "metaData": {
+    "time": "",
+    "currentQuote": {
+      "quote": "",
+      "author": ""
+    }
+  },
+  "quotes": [
+    {
+      "quote": "zon is geel",
+      "auteur": "chatGPT"
+    },
+    {
+      "quote": "ex",
+      "auteur": "ample"
+    }
+  ]
+}
