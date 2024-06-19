@@ -29,27 +29,14 @@ pip install -r dependencies.txt
 echo "✅ Dependencies installed"
 
 config_file="config.cfg"
+default_config_file="config.cfg.default"
+default_quote_json="quotes.json.default"
 quotes_file="quotes.json"
-default_quote_json='{
-  "metaData": {
-    "time": "",
-    "currentQuote": {
-      "quote": "",
-      "author": ""
-    }
-  },
-  "quotes": []
-}
-'
 
 # Check if config.cfg exists
 if [ ! -f "$config_file" ]; then
     echo "⌛ Creating $config_file..."
-    touch "$config_file"
-
-    echo "[bot]" >> "$config_file"
-    echo "token=your_bot_token" >> "$config_file"
-    echo "guildId=your_guid_id" >> "$config_file"
+    cp $default_config_file $config_file
     echo "✅ $config_file created"
     echo "Make sure to enter your bot token in $config_file"
 
@@ -60,7 +47,7 @@ fi
 # Check if quotes db exists
 if [ ! -f "$quotes_file" ]; then
     echo "⌛ Creating $quotes_file..."
-    echo "$default_quote_json" > "$quotes_file"
+    cp  $default_quote_json $quotes_file
     echo "✅ $quotes_file created"
 
 else
