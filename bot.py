@@ -51,7 +51,7 @@ async def addQuote(interaction, quote: str, author: str):
 )
 async def stats(interaction):
     # multiple button presses from the same View are handdled using on_button_click event
-    await interaction.response.send_message("What stat?", view=StatView(quotebook), ephemeral=True)
+    await interaction.response.send_message("What stats?", view=StatView(quotebook), ephemeral=True)
 
 
 @client.event

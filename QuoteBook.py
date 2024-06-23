@@ -28,22 +28,25 @@ class Stats:
 
     def from_key(self, key):
         options = {
-            "leaderboard": {
-                "file": dictToTable(self.leaderboard, ["place", "author", "amount"])
-            },
-            "authors": {"content": len(self.leaderboard.keys())},
-            "all": {
-                "files": [
-                    dictToTable(self.leaderboard, ["place", "author", "amount"]),
-                    dictToTable(
-                        {
-                            self.totalAuthors: self.totalQuotes,
-                        },
-                        ["totalAuthors", "totalQuotes"],
-                        False,
-                    ),
-                ]
-            },
+            "leaderboard": [
+                dictToTable(self.leaderboard, ["place", "author", "amount"])
+            ],
+            "authors": [
+                "auhours and quotes",
+                dictToTable(
+                    {self.totalAuthors: self.totalQuotes},
+                    ["totalAuthors", "totalQuotes"],
+                    False,
+                ),
+            ],
+            "all": [
+                dictToTable(self.leaderboard, ["place", "author", "amount"]),
+                dictToTable(
+                    {self.totalAuthors: self.totalQuotes},
+                    ["totalAuthors", "totalQuotes"],
+                    False,
+                ),
+            ],
         }
 
         return options[key]

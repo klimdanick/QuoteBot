@@ -24,11 +24,11 @@ class StatView(discord.ui.View):
             return
         id = interaction.data.get('custom_id')
         response = self.quotebook.get_stats(id)
-        if "files" in response:
-            for file in response["files"]:
-                await interaction.followup.send(file=file)
-            return
-        await interaction.followup.send(**response)
+        for value in response:
+            if isinstance(value, discord.File):
+                await interaction.followup.send(file=value)
+            else:    
+                await interaction.followup.send(value)
 
     async def interaction_check(self, interaction: discord.Interaction):
         if not isinstance(interaction, discord.Interaction):
