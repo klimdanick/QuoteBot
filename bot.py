@@ -50,34 +50,15 @@ async def addQuote(interaction, quote: str, author: str):
     name="stats", description="See quote stats", guild=discord.Object(id=GUILD_ID)
 )
 async def stats(interaction):
-    view = StatView(quotebook)
-
-    await interaction.response.send_message("What stat?", view=view, ephemeral=True)
-    # await view.wait()
-    # print("done waiting")
-    # if view.value is None:
-    #     print('Timed out...')
-    #     return
-    # response = quotebook.get_stats(view.value)
-    # if "files" in response:
-    #     for file in response["files"]:
-    #         await interaction.followup.send(file=file)
-    #     return
-    # await interaction.followup.send(**response)
-
-    # leaderboard, totalAutors, totalQuotes = quotebook.get_stats()
-    # file = dictToTable(leaderboard, ["place", "author", "amount"])
-    # await interaction.response.send_message(file=discord.File((file)))
-    # file = dictToTable({totalAutors: totalQuotes,}, ["totalAuthors","totalQuotes"], False)
-    # await interaction.channel.send(file=discord.File((file)))
+    # multiple button presses from the same View are handdled using on_button_click event
+    await interaction.response.send_message("What stat?", view=StatView(quotebook), ephemeral=True)
 
 
 @client.event
 async def on_button_click(interaction: discord.Interaction):
-    if isinstance(interaction, discord.Interaction):
-        view = interaction.message.view
-        if isinstance(view, StatView):
-            await view.interaction_check(interaction)
+    view = interaction.message.view # type: ignore
+    if isinstance(view, StatView):
+        await view.interaction_check(interaction)
 
 
 @client.event

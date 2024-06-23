@@ -8,38 +8,34 @@ class StatView(discord.ui.View):
     def __init__(self, quotebook):
         super().__init__(timeout=180)
         self.quotebook = quotebook
-
-    @discord.ui.button(label="all", style=discord.ButtonStyle.primary)
-    async def all(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.defer()
-        button.custom_id = "all"
-        await self.process_button_press(interaction, button.custom_id)
-
-    @discord.ui.button(label="leaderboard", style=discord.ButtonStyle.secondary)
-    async def leaderboard(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
-        await interaction.response.defer()
-        button.custom_id = "leaderboard"
-        await self.process_button_press(interaction, button.custom_id)
-
-    @discord.ui.button(label="Authors", style=discord.ButtonStyle.secondary)
-    async def Authors(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
-        await interaction.response.defer()
-        button.custom_id = "authors"
-        await self.process_button_press(interaction, button.custom_id)
+        buttons = [
+            ("all", discord.ButtonStyle.primary),
+            ("leaderboard", discord.ButtonStyle.secondary),
+            ("authors", discord.ButtonStyle.secondary),
+        ]
+        
+        for label, style in buttons:
+            self.add_item(discord.ui.Button(label=label, style=style, custom_id=label))
 
     async def process_button_press(
-        self, interaction: discord.Interaction, custom_id: str
+        self, interaction: discord.Interaction
     ):
-        response = self.quotebook.get_stats(custom_id)
+        if not interaction.data:
+            return
+        id = interaction.data.get('custom_id')
+        response = self.quotebook.get_stats(id)
         if "files" in response:
             for file in response["files"]:
                 await interaction.followup.send(file=file)
             return
         await interaction.followup.send(**response)
+
+    async def interaction_check(self, interaction: discord.Interaction):
+        if not isinstance(interaction, discord.Interaction):
+            return False
+        await interaction.response.defer()
+        await self.process_button_press(interaction)
+        
 
 
 def dictToTable(leaderboard, column_names, include_index=True, discord_file=True):

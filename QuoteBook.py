@@ -27,7 +27,6 @@ class Stats:
         self.totalQuotes = len(self.quotes)
 
     def from_key(self, key):
-        #  key options: leaderboard, authors, all
         options = {
             "leaderboard": {
                 "file": dictToTable(self.leaderboard, ["place", "author", "amount"])
