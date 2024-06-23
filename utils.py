@@ -1,14 +1,62 @@
+import io
 import svgwrite
 from cairosvg import svg2png
+import discord
 
 
-def dictToTable(leaderboard, column_names, include_index=True):
+class StatView(discord.ui.View):
+    def __init__(self, quotebook):
+        super().__init__(timeout=180)
+        self.quotebook = quotebook
+
+    @discord.ui.button(label="all", style=discord.ButtonStyle.primary)
+    async def all(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer()
+        button.custom_id = "all"
+        await self.process_button_press(interaction, button.custom_id)
+
+    @discord.ui.button(label="leaderboard", style=discord.ButtonStyle.secondary)
+    async def leaderboard(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
+        await interaction.response.defer()
+        button.custom_id = "leaderboard"
+        await self.process_button_press(interaction, button.custom_id)
+
+    @discord.ui.button(label="Authors", style=discord.ButtonStyle.secondary)
+    async def Authors(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
+        await interaction.response.defer()
+        button.custom_id = "authors"
+        await self.process_button_press(interaction, button.custom_id)
+
+    async def process_button_press(
+        self, interaction: discord.Interaction, custom_id: str
+    ):
+        response = self.quotebook.get_stats(custom_id)
+        if "files" in response:
+            for file in response["files"]:
+                await interaction.followup.send(file=file)
+            return
+        await interaction.followup.send(**response)
+
+
+def dictToTable(leaderboard, column_names, include_index=True, discord_file=True):
     def add_line(dwg, start, end):
-        dwg.add(dwg.line(start, end, stroke=svgwrite.rgb(255, 255, 255, '%')))
+        dwg.add(dwg.line(start, end, stroke=svgwrite.rgb(255, 255, 255, "%")))
 
     def add_text(dwg, text, insert):
-        dwg.add(dwg.text(text, insert=insert, style="font-family:sans", fill="white", text_anchor="middle",
-                        alignment_baseline="middle"))
+        dwg.add(
+            dwg.text(
+                text,
+                insert=insert,
+                style="font-family:sans",
+                fill="white",
+                text_anchor="middle",
+                alignment_baseline="middle",
+            )
+        )
 
     num_columns = len(column_names)
     svg_width = 300
@@ -16,18 +64,28 @@ def dictToTable(leaderboard, column_names, include_index=True):
     cell_width = (svg_width - 2 * margin) / num_columns
     cell_height = 30
 
-    svg_height = (len(leaderboard) + 1) * cell_height + margin * 2  # Plus one for the header row
+    svg_height = (
+        len(leaderboard) + 1
+    ) * cell_height + margin * 2  # Plus one for the header row
     dwg = svgwrite.Drawing(filename="table.png", size=(svg_width, svg_height))
 
     # Draw border lines
     add_line(dwg, (margin, margin), (svg_width - margin, margin))
-    add_line(dwg, (margin, svg_height - margin), (svg_width - margin, svg_height - margin))
+    add_line(
+        dwg, (margin, svg_height - margin), (svg_width - margin, svg_height - margin)
+    )
     add_line(dwg, (margin, margin), (margin, svg_height - margin))
-    add_line(dwg, (svg_width - margin, margin), (svg_width - margin, svg_height - margin))
+    add_line(
+        dwg, (svg_width - margin, margin), (svg_width - margin, svg_height - margin)
+    )
 
     # Add column names as header row
     for i, column_name in enumerate(column_names):
-        add_text(dwg, column_name, ((i + 0.5) * cell_width + margin, cell_height / 2 + margin))
+        add_text(
+            dwg,
+            column_name,
+            ((i + 0.5) * cell_width + margin, cell_height / 2 + margin),
+        )
 
     for i, row in enumerate(leaderboard.items(), start=1):
         y = margin + i * cell_height
@@ -37,11 +95,14 @@ def dictToTable(leaderboard, column_names, include_index=True):
 
         if include_index:
             add_text(dwg, str(i), (margin + 0.5 * cell_width, y + cell_height / 2))
-        
+
         for j, value in enumerate(row, start=(1 if include_index else 0)):
             x = (j + 0.5) * cell_width + margin
             add_text(dwg, str(value), (x, y + cell_height / 2))
 
-    svg2png(bytestring=dwg.tostring(), write_to=dwg.filename)
-    return dwg.filename
+    buffer = io.BytesIO()
 
+    svg2png(bytestring=dwg.tostring(), write_to=buffer)
+    buffer.seek(0)
+
+    return discord.File(fp=buffer, filename=dwg.filename) if discord_file else buffer
