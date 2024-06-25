@@ -28,28 +28,31 @@ class Stats:
 
     def from_key(self, key):
         options = {
-            "leaderboard": [
-                dictToTable(self.leaderboard, ["place", "author", "amount"])
-            ],
-            "authors": [
-                "auhours and quotes",
-                dictToTable(
-                    {self.totalAuthors: self.totalQuotes},
-                    ["totalAuthors", "totalQuotes"],
-                    False,
-                ),
-            ],
-            "all": [
-                dictToTable(self.leaderboard, ["place", "author", "amount"]),
-                dictToTable(
-                    {self.totalAuthors: self.totalQuotes},
-                    ["totalAuthors", "totalQuotes"],
-                    False,
-                ),
-            ],
+            "leaderboard": self.__leaderboard,
+            "authors": self.__author_stats(),
+            "all": self.__all,
         }
 
         return options[key]
+    
+    
+    
+    def __all(self):
+        return [*self.__author_stats(), *self.__leaderboard()]
+
+    def __leaderboard(self):
+        return [
+                dictToTable(self.leaderboard, ["place", "author", "amount"])
+            ]
+    def __author_stats(self):
+        return [
+                dictToTable(
+                    {self.totalAuthors: self.totalQuotes},
+                    ["totalAuthors", "totalQuotes"],
+                    False,
+                ),
+            ]
+
 
     def __calc_leaderboard(self):
         leaderboard = {}
