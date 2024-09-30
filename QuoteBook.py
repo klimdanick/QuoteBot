@@ -85,7 +85,7 @@ class QuoteBook:
                 if " en " in quote.author
                 else [quote.author]
             ):
-                leaderboard[author.lower()] = leaderboard.get(author.lower(), 0) + 1
+                leaderboard[author.lower().strip()] = leaderboard.get(author.lower().strip(), 0) + 1
         totalQuotes = len(self.quotes)
         totalAuthors = len(leaderboard.keys())
 
