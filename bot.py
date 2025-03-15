@@ -33,7 +33,17 @@ tree = discord.app_commands.CommandTree(client)
 )
 async def quote(interaction):
     await interaction.response.send_message(quotebook.quote_of_the_day())
-    
+
+
+@tree.command(
+    name="word",
+    description="The daily word!",
+    guild=discord.Object(id=GUILD_ID)
+)
+async def word(interaction):
+    await interaction.response.send_message(quotebook.word_of_the_day())
+   
+
 @tree.command(
     name="add_quote",
     description="Add a new quote",
